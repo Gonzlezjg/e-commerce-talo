@@ -1,0 +1,19 @@
+{
+  "name": "e-commerce-talo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "set NODE_ENV=dev && turbo dev",
+    "build": "turbo build"
+  },
+  "keywords": [],
+  "author": "Jose Gregorio Puerta Gonzalez",
+  "license": "ISC",
+  "workspaces": [
+    "apps/*"
+  ],
+  "devDependencies": {
+    "turbo": "^1.10.15"
+  }
+}

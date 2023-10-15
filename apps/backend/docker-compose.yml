@@ -1,0 +1,15 @@
+version: '3.1'
+
+services:
+  e_commerce_mysql:
+    image: mysql:8.1.0
+    container_name: e_commerce_talo
+    restart: always
+    environment:
+      MYSQL_DB: e_commerce_talo
+      MYSQL_USER: root
+      MYSQL_PASSWORD: admin12345678
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3312:3306"

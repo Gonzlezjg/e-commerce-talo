@@ -1,0 +1,6 @@
+node_modules
+.turbo
+apps/backend/dist
+apps/backend/migrations
+apps/client/node_modules
+.dev.env
