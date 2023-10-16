@@ -3,40 +3,46 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  Put,
+  ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserDTO, UserUpdateDTO } from '../dto/user.dto';
+import { AuthenticationGuard } from 'src/authentication/guards/authentication.guard';
 
 @Controller('users')
+@UseGuards(AuthenticationGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @Post('create')
+  async create(@Body() userDto: UserDTO) {
+    return await this.usersService.create(userDto);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @Get('all')
+  async findAll() {
+    return await this.usersService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findById(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.usersService.findById(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Put('update/:id')
+  async update(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() userUpdateDTO: UserUpdateDTO,
+  ) {
+    return await this.usersService.update(id, userUpdateDTO);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Delete('delete/:id')
+  async delete(@Param('id', new ParseUUIDPipe()) id: string) {
+    return await this.usersService.delete(id);
   }
 }
