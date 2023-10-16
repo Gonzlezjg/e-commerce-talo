@@ -11,7 +11,7 @@
   "author": "Jose Gregorio Puerta Gonzalez",
   "license": "ISC",
   "workspaces": [
-    "apps/*"
+    "./apps/*"
   ],
   "devDependencies": {
     "turbo": "^1.10.15"

@@ -1,4 +1,3 @@
-import { Reflector } from '@nestjs/core';
 import { UsersService } from './../../users/services/users.service';
 import {
   CanActivate,
@@ -6,24 +5,18 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { decodeToken } from 'src/utils/token';
 import { IUserToken } from '../interfaces/authentication.interface';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly reflector: Reflector,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
-  async canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<Request>();
 
-    const token = request.headers['A-Token'];
+    const token = request.headers['a-token'];
 
     if (!token || Array.isArray(token)) {
       throw new UnauthorizedException('Token invalido');

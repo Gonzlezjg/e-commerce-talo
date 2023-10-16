@@ -12,27 +12,33 @@ import {
 import { UsersService } from '../services/users.service';
 import { UserDTO, UserUpdateDTO } from '../dto/user.dto';
 import { AuthenticationGuard } from 'src/authentication/guards/authentication.guard';
+import { RolesGuard } from 'src/authentication/guards/roles.guard';
+import { Roles } from 'src/authentication/decorators/roles.decorator';
 
 @Controller('users')
-@UseGuards(AuthenticationGuard)
+@UseGuards(AuthenticationGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Roles('ADMIN')
   @Post('create')
   async create(@Body() userDto: UserDTO) {
     return await this.usersService.create(userDto);
   }
 
+  @Roles('ADMIN')
   @Get('all')
   async findAll() {
     return await this.usersService.findAll();
   }
 
+  @Roles('CLIENT')
   @Get(':id')
   async findById(@Param('id', new ParseUUIDPipe()) id: string) {
     return await this.usersService.findById(id);
   }
 
+  @Roles('CLIENT')
   @Put('update/:id')
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -41,6 +47,7 @@ export class UsersController {
     return await this.usersService.update(id, userUpdateDTO);
   }
 
+  @Roles('ADMIN')
   @Delete('delete/:id')
   async delete(@Param('id', new ParseUUIDPipe()) id: string) {
     return await this.usersService.delete(id);

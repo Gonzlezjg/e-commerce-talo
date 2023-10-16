@@ -8,10 +8,6 @@ export const decodeToken = (token: string): IUserToken | string => {
   try {
     const decodedToken = jwt.decode(token) as AuthTokenResult;
 
-    if (!decodedToken) {
-      return 'Token inválido';
-    }
-
     const currentTimestampInSeconds = Math.floor(Date.now() / 1000);
     const expirationTimestamp = decodedToken.exp;
 
