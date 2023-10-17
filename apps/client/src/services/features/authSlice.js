@@ -29,11 +29,11 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(authenticateUser.fulfilled, (state, action) => {
       state.user.isAuthenticated = true;
-      state.user.id = action.payload.id;
-      state.user.username = action.payload.username;
-      state.user.role = action.payload.role;
+      state.user.id = action.payload.user.id;
+      state.user.username = action.payload.user.username;
+      state.user.role = action.payload.user.role;
       state.user.accessToken = action.payload.accessToken;
-      state.user.isActive = action.payload.isActive;
+      state.user.isActive = action.payload.user.isActive;
     });
   },
 });

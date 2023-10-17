@@ -8,7 +8,7 @@ const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addProduct(state, action) {
+    addProduct: (state, action) => {
       const {
         id,
         name,
@@ -23,7 +23,16 @@ const cartSlice = createSlice({
       );
 
       if (existingProductIndex !== -1) {
-        state.products[existingProductIndex].quantity += 1;
+        state.products = state.products.map((product, index) => {
+          if (index === existingProductIndex) {
+            return {
+              ...product,
+              quantity: product.quantity + 1,
+              totalTaloPrice: product.taloPrice + taloPrice,
+            };
+          }
+          return product;
+        });
       } else {
         state.products.push({
           id,
@@ -37,20 +46,31 @@ const cartSlice = createSlice({
         });
       }
     },
-    removeProduct(state, action) {
+
+    removeProduct: (state, action) => {
       const existingProductIndex = state.products.findIndex(
         (product) => product.id === action.payload
       );
 
       if (existingProductIndex !== -1) {
         if (state.products[existingProductIndex].quantity > 1) {
-          state.products[existingProductIndex].quantity -= 1;
+          state.products = state.products.map((product, index) => {
+            if (index === existingProductIndex) {
+              return {
+                ...product,
+                quantity: product.quantity - 1,
+              };
+            }
+            return product;
+          });
         } else {
-          state.products.splice(existingProductIndex, 1);
+          state.products = state.products.filter(
+            (_, index) => index !== existingProductIndex
+          );
         }
       }
     },
-    editProduct(state, action) {
+    editProduct: (state, action) => {
       const {
         id,
         name,
@@ -65,16 +85,21 @@ const cartSlice = createSlice({
       );
 
       if (existingProductIndex !== -1) {
-        state.products[existingProductIndex] = {
-          id,
-          name,
-          taloPrice,
-          taloPriceWithTax,
-          brands,
-          imagePath,
-          stock,
-          quantity: state.products[existingProductIndex].quantity,
-        };
+        state.products = state.products.map((product, index) => {
+          if (index === existingProductIndex) {
+            return {
+              id,
+              name,
+              taloPrice,
+              taloPriceWithTax,
+              brands,
+              imagePath,
+              stock,
+              quantity: product.quantity,
+            };
+          }
+          return product;
+        });
       }
     },
   },

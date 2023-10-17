@@ -14,12 +14,15 @@ import axios from 'axios';
 // Acción asíncrona para autenticar
 export const authenticateUser = createAsyncThunk(
   'authentication/authenticateUser',
-  async ({ username, password }, { rejectWithValue }) => {
+  async (userData, { rejectWithValue }) => {
     try {
       const response = await fetch('/api/authentication/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({
+          username: userData.user,
+          password: userData.password,
+        }),
       });
 
       if (!response.ok) {
@@ -43,8 +46,7 @@ export const authenticateUser = createAsyncThunk(
 export const createUser = createAsyncThunk(
   'user/create',
   async (
-    { username, password, email, role, firstname, isActive = true },
-    accessToken,
+    { username, password, email, role, firstname, isActive, accessToken },
     { rejectWithValue }
   ) => {
     try {
@@ -110,6 +112,7 @@ export const deleteUser = createAsyncThunk(
   async (userId, accessToken, { rejectWithValue }) => {
     try {
       const response = await deleteUserAPI(userId, accessToken);
+      console.log(response);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -121,7 +124,7 @@ export const getAllUsers = createAsyncThunk(
   'user/getAll',
   async (accessToken, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`api/users/all`, {
+      const response = await axios.get(`/api/users/all`, {
         headers: { 'A-Token': accessToken },
       });
       return response.data;

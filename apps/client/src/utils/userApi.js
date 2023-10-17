@@ -28,7 +28,7 @@ export const updateUserAPI = async (userId, updatedData, accessToken) => {
 };
 
 export const deleteUserAPI = async (userId, accessToken) => {
-  const response = await axios.delete(`${BASE_URL}/delete/${userId}`, {
+  const response = await axios.delete(`${BASE_URL}/users/delete/${userId}`, {
     headers: { 'A-Token': accessToken },
   });
   return response;
