@@ -2,17 +2,40 @@ import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import { Button, Typography } from '@mui/material';
-import React from 'react';
+import {
+  Button,
+  Divider,
+  Grid,
+  Paper,
+  TextField,
+  Typography,
+} from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import CardResume from './CardResume';
 import { useSelector } from 'react-redux';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 const steps = ['Carrito', 'Entrega', 'Pago'];
 
 export default function ResumeStepper() {
   const cartProducts = useSelector((state) => state.cart.products);
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [completed, setCompleted] = React.useState({});
+  const [activeStep, setActiveStep] = useState(0);
+  const [completed, setCompleted] = useState({});
+  const [totalTaloPrice, setTotalTaloPrice] = useState(0);
+
+  function sumTotalTaloPrice(arr) {
+    return arr.reduce((total, producto) => {
+      if (producto.totalTaloPrice) {
+        return total + producto.totalTaloPrice;
+      } else if (producto.quantity && producto.taloPrice) {
+        return total + producto.quantity * producto.taloPrice;
+      }
+      return total;
+    }, 0);
+  }
+  useEffect(() => {
+    setTotalTaloPrice(sumTotalTaloPrice(cartProducts));
+  }, [cartProducts]);
 
   const totalSteps = () => {
     return steps.length;
@@ -56,6 +79,10 @@ export default function ResumeStepper() {
     setCompleted({});
   };
 
+  if (cartProducts.length === 0) {
+    return <>{'Sin datos'}</>;
+  }
+
   return (
     <Box sx={{ width: '100%' }}>
       <Stepper nonLinear activeStep={activeStep} alternativeLabel>
@@ -79,8 +106,8 @@ export default function ResumeStepper() {
         ) : (
           <React.Fragment>
             {activeStep === 0 && (
-              <Box sx={{ display: 'flex', justifyContent: "center" }}>
-                <Box component="div" sx={{width: "100%"}}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 10 }}>
+                <Box component="div" sx={{ width: '100%' }}>
                   <Typography
                     fontFamily={'Roboto'}
                     variant="p"
@@ -95,12 +122,159 @@ export default function ResumeStepper() {
                       gap: 3,
                     }}
                   >
-                    {cartProducts.map((data, key) => (
-                      <CardResume data={data} key={key} />
-                    ))}
+                    {cartProducts.length > 0 &&
+                      cartProducts.map((data, key) => (
+                        <CardResume data={data} key={key} />
+                      ))}
                   </Box>
                 </Box>
-                <Box>Resume</Box>
+                {cartProducts.length > 0 && (
+                  <Box
+                    sx={{
+                      width: '50%',
+                      maxHeight: 250,
+                    }}
+                  >
+                    <Paper
+                      sx={{
+                        height: '100%',
+                        p: 4,
+                      }}
+                    >
+                      <Typography
+                        fontWeight="bold"
+                        fontFamily="Roboto"
+                        variant="p"
+                        sx={{
+                          py: 4,
+                          mb: 2,
+                        }}
+                      >
+                        Resumen del pedido
+                      </Typography>
+                      <Divider />
+                      <Grid
+                        alignItems="center"
+                        direction="row"
+                        container
+                        sx={{ mt: 4 }}
+                      >
+                        <Grid display={'flex'} item xs={12}>
+                          <TextField
+                            id="outlined-basic"
+                            variant="outlined"
+                            sx={{ width: '100%' }}
+                          />
+                          <Button variant="outlined">Aplicar</Button>
+                        </Grid>
+                      </Grid>
+                      <Grid
+                        alignItems="center"
+                        direction="row"
+                        container
+                        sx={{ mt: 2 }}
+                      >
+                        <Grid item xs={4}>
+                          <Typography
+                            fontFamily="Roboto"
+                            variant="p"
+                            sx={{
+                              py: 4,
+                              mb: 2,
+                            }}
+                          >
+                            Materiales
+                          </Typography>
+                          <HelpOutlineIcon color="primary" />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Typography
+                            fontFamily="Roboto"
+                            variant="p"
+                            sx={{
+                              py: 4,
+                              mb: 2,
+                              textAlign: 'center',
+                            }}
+                          >
+                            $
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Typography
+                            fontFamily="Roboto"
+                            variant="p"
+                            sx={{
+                              py: 4,
+                              mb: 2,
+                            }}
+                          >
+                            {cartProducts.length}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                      <Grid
+                        alignItems="center"
+                        direction="row"
+                        container
+                        sx={{ mt: 2 }}
+                      >
+                        <Grid item xs={4}>
+                          <Typography
+                            fontFamily="Roboto"
+                            variant="p"
+                            fontWeight="bold"
+                            sx={{
+                              py: 4,
+                              mb: 2,
+                            }}
+                          >
+                            Total
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Typography
+                            fontFamily="Roboto"
+                            variant="p"
+                            sx={{
+                              py: 4,
+                              mb: 2,
+                              textAlign: 'center',
+                            }}
+                          >
+                            $
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <Typography
+                            fontFamily="Roboto"
+                            variant="p"
+                            fontWeight="bold"
+                            sx={{
+                              py: 4,
+                              mb: 2,
+                              textAlign: 'center',
+                            }}
+                          >
+                            {totalTaloPrice}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                      <Grid
+                        alignItems="center"
+                        direction="row"
+                        container
+                        sx={{ mt: 4 }}
+                      >
+                        <Grid item xs={12}>
+                          <Button variant="outlined" sx={{ width: '100%' }}>
+                            continuar
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </Paper>
+                  </Box>
+                )}
               </Box>
             )}
             <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>

@@ -8,12 +8,26 @@ import {
 import { Request } from 'express';
 import { decodeToken } from 'src/utils/token';
 import { IUserToken } from '../interfaces/authentication.interface';
+import { Reflector } from '@nestjs/core';
+import { PUBLIC_KEY } from 'src/constants/keys';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext) {
+    const isPublic = this.reflector.get<boolean>(
+      PUBLIC_KEY,
+      context.getHandler(),
+    );
+
+    if (isPublic) {
+      return true;
+    }
+
     const request = context.switchToHttp().getRequest<Request>();
 
     const token = request.headers['a-token'];

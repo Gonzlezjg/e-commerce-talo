@@ -28,7 +28,6 @@ export const authenticateUser = createAsyncThunk(
       if (!response.ok) {
         throw new Error('Authentication failed');
       }
-
       const data = await response.json();
 
       return data;
@@ -61,6 +60,7 @@ export const createUser = createAsyncThunk(
         },
         accessToken
       );
+      console.log(response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -83,14 +83,22 @@ export const readUser = createAsyncThunk(
 export const updateUser = createAsyncThunk(
   'user/update',
   async (
-    { userId, username, password, email, role, firstname, isActive },
-    accessToken,
+    {
+      userId,
+      username,
+      password,
+      email,
+      role,
+      firstname,
+      isActive,
+      accessToken,
+    },
     { rejectWithValue }
   ) => {
     try {
       const response = await updateUserAPI(
+        userId,
         {
-          userId,
           username,
           password,
           email,
@@ -102,6 +110,7 @@ export const updateUser = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
+      console.log(error);
       return rejectWithValue(error.message);
     }
   }
@@ -109,8 +118,9 @@ export const updateUser = createAsyncThunk(
 
 export const deleteUser = createAsyncThunk(
   'user/delete',
-  async (userId, accessToken, { rejectWithValue }) => {
+  async ({ userId, accessToken }, { rejectWithValue }) => {
     try {
+      console.log(userId, accessToken);
       const response = await deleteUserAPI(userId, accessToken);
       console.log(response);
       return response.data;

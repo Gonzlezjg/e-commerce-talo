@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, Paper, Typography } from '@mui/material';
 import TableUsers from '../components/TableUsers';
 import AddIcon from '@mui/icons-material/Add';
 import UserModal from '../components/UserModal';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { getAllUsers } from '../services/thunks/asyncThunks';
 
 const Profile = () => {
   const { users, loading } = useSelector((state) => state.users);
@@ -12,7 +13,18 @@ const Profile = () => {
   const accessToken = useSelector((state) => state.user.user.accessToken);
   const [open, setOpenUserModal] = useState(false);
   const [confirmActionDialog, setConfirmActionDialog] = useState(false);
-  const [idToDelete, setIdToDelete] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [idToDeleteOrEdit, setIdToDeleteOrEdit] = useState(null);
+  const [usersData, setUsersData] = useState([]);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllUsers(accessToken));
+  }, []);
+
+  useEffect(() => {
+    setUsersData(users);
+  }, [users]);
 
   function formatReadableDate(isoDate) {
     const date = new Date(isoDate);
@@ -30,8 +42,8 @@ const Profile = () => {
   }
 
   const transformedData =
-    users.length > 0 &&
-    users.map((user) => ({
+    usersData.length > 0 &&
+    usersData.map((user) => ({
       id: user.id,
       firstname: user.firstname,
       username: user.username,
@@ -39,11 +51,7 @@ const Profile = () => {
       createdAt: formatReadableDate(user.createdAt),
     }));
 
-  if (loading) {
-    return <>Load...</>;
-  }
-  console.log(idToDelete);
-  return (
+    return (
     <Box
       component={'main'}
       sx={{
@@ -80,11 +88,16 @@ const Profile = () => {
             p: 4,
           }}
         >
-          <TableUsers
-            users={transformedData}
-            setConfirmActionDialog={setConfirmActionDialog}
-            setIdToDelete={setIdToDelete}
-          />
+          {!loading && (
+            <TableUsers
+              setOpenUserModal={setOpenUserModal}
+              users={transformedData}
+              setConfirmActionDialog={setConfirmActionDialog}
+              setIdToDeleteOrEdit={setIdToDeleteOrEdit}
+              loading={loading}
+              setIsEditing={setIsEditing}
+            />
+          )}
         </Paper>
       )}
       {open && (
@@ -92,13 +105,15 @@ const Profile = () => {
           setOpen={setOpenUserModal}
           open={open}
           accessToken={accessToken}
+          idToDeleteOrEdit={idToDeleteOrEdit}
+          isEditing={isEditing}
         />
       )}
       {confirmActionDialog && (
         <ConfirmDialog
           confirmActionDialog={confirmActionDialog}
           setConfirmActionDialog={setConfirmActionDialog}
-          idToDelete={idToDelete}
+          userId={idToDeleteOrEdit}
           accessToken={accessToken}
         />
       )}

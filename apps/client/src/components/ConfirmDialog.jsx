@@ -6,12 +6,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import { useDispatch } from 'react-redux';
 import { deleteUser } from '../services/thunks/asyncThunks';
+import { removeUserFromState } from '../services/features/userSlice';
 
 export default function ConfirmDialog({
   title = '¿Desea realizar esta acción?',
   setConfirmActionDialog,
   confirmActionDialog,
-  idToDelete,
+  userId,
   accessToken,
 }) {
   const dispatch = useDispatch();
@@ -20,7 +21,8 @@ export default function ConfirmDialog({
   };
 
   const handleDelete = () => {
-    dispatch(deleteUser(idToDelete, accessToken));
+    dispatch(deleteUser({ userId, accessToken }));
+    dispatch(removeUserFromState(userId));
     handleClose();
   };
 

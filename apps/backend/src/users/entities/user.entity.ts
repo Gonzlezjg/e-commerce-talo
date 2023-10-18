@@ -6,8 +6,8 @@ import { Column, Entity } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class UserEntity extends BaseEntity implements IUser {
-  @Column({ unique: true })
-  username: string;
+  @Column({ nullable: true })
+  username?: string;
 
   @Exclude()
   @Column()
@@ -19,12 +19,13 @@ export class UserEntity extends BaseEntity implements IUser {
   @Column({
     type: 'enum',
     enum: ROLES,
+    default: ROLES.CLIENT,
   })
-  role: ROLES;
+  role?: ROLES;
 
-  @Column()
-  firstname: string;
+  @Column({ nullable: true })
+  firstname?: string;
 
   @Column({ default: true })
-  isActive: boolean;
+  isActive?: boolean;
 }

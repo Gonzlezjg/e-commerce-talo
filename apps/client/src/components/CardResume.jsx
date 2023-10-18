@@ -1,11 +1,5 @@
 /* eslint-disable react/prop-types */
-import {
-  Button,
-  CardActions,
-  Grid,
-  IconButton,
-  TextField,
-} from '@mui/material';
+import { Button, Grid, IconButton, Tooltip } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -13,11 +7,20 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import { useDispatch } from 'react-redux';
+import {
+  addProduct,
+  removeProduct,
+  removeAll,
+} from '../services/features/cartSlice';
+
 export default function CardResume({ data }) {
+  const dispatch = useDispatch();
   return (
     <Card
       sx={{
         maxWidth: 850,
+        backgroundColor: '#f5f7fa',
       }}
     >
       <Grid container spacing={1}>
@@ -103,11 +106,15 @@ export default function CardResume({ data }) {
           px={2}
           xs={2}
         >
-          <Box>
-            <Typography variant="p" fontFamily="Roboto">
+          <Tooltip title="Esta acción elimina todos los productos" placement='top-start'>
+            <Button
+              variant="text"
+              color="secondary"
+              onClick={() => dispatch(removeAll(data.id))}
+            >
               Eliminar
-            </Typography>
-          </Box>
+            </Button>
+          </Tooltip>
           <Box
             sx={{
               display: 'flex',
@@ -124,10 +131,15 @@ export default function CardResume({ data }) {
                   color: 'white',
                 },
               }}
-              aria-label="add"
+              aria-label="remove"
+              onClick={(e) => {
+                dispatch(removeProduct(data.id));
+                e.stopPropagation();
+              }}
             >
-              <AddIcon fontSize="small" />
+              <RemoveIcon fontSize="small" />
             </IconButton>
+
             <Box
               sx={{
                 py: 1,
@@ -136,9 +148,8 @@ export default function CardResume({ data }) {
                 borderRadius: 2,
               }}
             >
-              0
+              {data.quantity}
             </Box>
-
             <IconButton
               sx={{
                 background: '#374f6d',
@@ -148,9 +159,13 @@ export default function CardResume({ data }) {
                   color: 'white',
                 },
               }}
-              aria-label="remove"
+              aria-label="add"
+              onClick={(e) => {
+                dispatch(addProduct(data));
+                e.stopPropagation();
+              }}
             >
-              <RemoveIcon fontSize="small" />
+              <AddIcon fontSize="small" />
             </IconButton>
           </Box>
         </Grid>

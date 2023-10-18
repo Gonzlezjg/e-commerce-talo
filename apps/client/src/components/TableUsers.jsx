@@ -1,11 +1,15 @@
-import { Box, Button } from '@mui/material';
+/* eslint-disable react/prop-types */
+import { Box, Button, Skeleton } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 
 export default function TableUsers({
   users,
   setConfirmActionDialog,
-  setIdToDelete,
+  setIdToDeleteOrEdit,
+  loading,
+  setOpenUserModal,
+  setIsEditing,
 }) {
   const columns = [
     { field: 'id', headerName: 'ID', width: 150 },
@@ -28,14 +32,13 @@ export default function TableUsers({
       width: 500,
       disableClickEventBubbling: true,
       renderCell: (params) => {
-
         return (
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 1
+              gap: 1,
             }}
           >
             <Button
@@ -43,9 +46,11 @@ export default function TableUsers({
               variant="contained"
               startIcon={<DeleteOutlinedIcon />}
               onClick={(e) => {
+                setIsEditing(true);
+                setIdToDeleteOrEdit(params.row.id);
+                setOpenUserModal(true);
                 e.stopPropagation();
               }}
-              
             >
               Editar usuario
             </Button>
@@ -60,7 +65,7 @@ export default function TableUsers({
               startIcon={<DeleteOutlinedIcon />}
               onClick={(e) => {
                 setConfirmActionDialog(true);
-                setIdToDelete(params.row.id);
+                setIdToDeleteOrEdit(params.row.id);
                 e.stopPropagation();
               }}
             >
@@ -71,6 +76,10 @@ export default function TableUsers({
       },
     },
   ];
+
+  if (loading) {
+    return <Skeleton variant="rectangular" width={'100%'} height={300} />;
+  }
 
   return (
     <div style={{ height: 400, width: '100%' }}>

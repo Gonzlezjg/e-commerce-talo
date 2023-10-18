@@ -1,10 +1,10 @@
-import { CardActions, IconButton } from '@mui/material';
+/* eslint-disable react/prop-types */
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import AddIcon from '@mui/icons-material/Add';
+import NumbersIcon from '@mui/icons-material/Numbers';
 
 export default function CardCart({ data }) {
   return (
@@ -30,12 +30,40 @@ export default function CardCart({ data }) {
           }}
         >
           <CardContent sx={{ flex: '1 0 auto' }}>
-            <Typography component="div" variant="p">
+            <Typography
+              fontWeight="bold"
+              fontFamily="Roboto"
+              component="div"
+              variant="p"
+            >
               {data.name}
             </Typography>
-            <Typography component="div" variant="body2">
-              $ {data.taloPrice} - {data.quantity}
-            </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                mt: 2,
+              }}
+            >
+              <Typography fontFamily="Roboto" component="div" variant="body2">
+                $ {data.taloPrice} -
+              </Typography>
+              <Typography
+                fontFamily="Roboto"
+                component="div"
+                variant="body2"
+                sx={{
+                  display: 'flex',
+                  py: 0.5,
+                  px: 1,
+                  border: '1px solid gray',
+                  borderRadius: 2,
+                }}
+              >
+                {data.quantity}
+              </Typography>
+            </Box>
           </CardContent>
         </Box>
         <CardMedia
@@ -45,7 +73,6 @@ export default function CardCart({ data }) {
           alt="Live from space album cover"
         />
       </Box>
-
     </Card>
   );
 }

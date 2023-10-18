@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useForm, Controller } from 'react-hook-form';
 import {
   Box,
@@ -12,8 +13,8 @@ import {
 } from '@mui/material';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch } from 'react-redux';
-import { createUser } from '../services/thunks/asyncThunks';
+import { useDispatch, useSelector } from 'react-redux';
+import { createUser, updateUser } from '../services/thunks/asyncThunks';
 
 const style = {
   position: 'absolute',
@@ -26,57 +27,85 @@ const style = {
   p: 4,
 };
 
-const schema = yup.object().shape({
-  username: yup.string().required('El nombre de usuario es requerido'),
-  password: yup.string().required('La contraseña es requerida'),
-  email: yup
-    .string()
-    .email('Ingrese un correo válido')
-    .required('El correo es requerido'),
-  role: yup.string().required('El rol es requerido'),
-  firstname: yup.string().required('El primer nombre es requerido'),
-  isActive: yup.boolean().required('El estado de actividad es requerido'),
-});
-
-export default function UserModal({ open = false, setOpen, accessToken }) {
+export default function UserModal({
+  open = false,
+  setOpen,
+  accessToken,
+  isEditing,
+  idToDeleteOrEdit,
+}) {
+  const schema = yup.object().shape({
+    username: yup.string().required('El nombre de usuario es requerido'),
+    password: !isEditing
+      ? yup.string().required('La contraseña es requerida')
+      : yup.string().optional(),
+    email: yup
+      .string()
+      .email('Ingrese un correo válido')
+      .required('El correo es requerido'),
+    role: yup.string().required('El rol es requerido'),
+    firstname: yup.string().required('El primer nombre es requerido'),
+    isActive: yup.boolean().required('El estado de actividad es requerido'),
+  });
   const {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
+    setValue,
   } = useForm({
     resolver: yupResolver(schema),
   });
+  const { users, feedback } = useSelector((state) => state.users);
+  const userToEdit = users.filter((data) => data.id === idToDeleteOrEdit);
   const dispatch = useDispatch();
 
-  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const onSubmit = (data) => {
     const { username, password, email, role, firstname, isActive } = data;
-    dispatch(
-      createUser({
-        username,
-        password,
-        email,
-        role,
-        firstname,
-        isActive,
-        accessToken,
-      })
-    );
+    if (isEditing) {
+      dispatch(
+        updateUser({
+          userId: idToDeleteOrEdit,
+          username,
+          password,
+          email,
+          role,
+          firstname,
+          isActive,
+          accessToken,
+        })
+      );
+    } else {
+      dispatch(
+        createUser({
+          username,
+          password,
+          email,
+          role,
+          firstname,
+          isActive,
+          accessToken,
+        })
+      );
+    }
+
+    reset();
   };
 
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
         <Typography variant="h6" gutterBottom>
-          Crear Usuario
+          {isEditing ? 'Editar Usuario' : 'Crear Usuario'}
         </Typography>
+
         <form onSubmit={handleSubmit(onSubmit)}>
           <Controller
             name="username"
             control={control}
-            defaultValue=""
+            defaultValue={isEditing ? userToEdit[0].username : ''}
             render={({ field }) => (
               <TextField
                 {...field}
@@ -109,7 +138,7 @@ export default function UserModal({ open = false, setOpen, accessToken }) {
           <Controller
             name="email"
             control={control}
-            defaultValue=""
+            defaultValue={isEditing ? userToEdit[0].email : ''}
             render={({ field }) => (
               <TextField
                 {...field}
@@ -125,7 +154,7 @@ export default function UserModal({ open = false, setOpen, accessToken }) {
           <Controller
             name="role"
             control={control}
-            defaultValue="CLIENT"
+            defaultValue={isEditing ? userToEdit[0].role : 'CLIENT'}
             render={({ field }) => (
               <Select
                 {...field}
@@ -143,7 +172,7 @@ export default function UserModal({ open = false, setOpen, accessToken }) {
           <Controller
             name="firstname"
             control={control}
-            defaultValue=""
+            defaultValue={isEditing ? userToEdit[0].firstname : ''}
             render={({ field }) => (
               <TextField
                 {...field}
@@ -159,7 +188,7 @@ export default function UserModal({ open = false, setOpen, accessToken }) {
           <Controller
             name="isActive"
             control={control}
-            defaultValue={false}
+            defaultValue={isEditing ? userToEdit[0].isActive : false}
             render={({ field }) => (
               <FormControlLabel
                 control={
@@ -169,9 +198,22 @@ export default function UserModal({ open = false, setOpen, accessToken }) {
               />
             )}
           />
-          <Button type="submit" variant="contained" color="primary">
-            Guardar
-          </Button>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+            }}
+          >
+            {feedback && (
+              <Typography textAlign="center" color="red" variant="p">
+                {feedback.message}
+              </Typography>
+            )}
+            <Button type="submit" variant="contained" color="primary">
+              {isEditing ? 'Actualizar' : 'Guardar'}
+            </Button>
+          </Box>
         </form>
       </Box>
     </Modal>

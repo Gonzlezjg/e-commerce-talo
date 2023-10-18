@@ -1,8 +1,10 @@
+/* eslint-disable react/prop-types */
 import Drawer from '@mui/material/Drawer';
 import CardCart from './CardCart';
 import { Box, Button, Typography } from '@mui/material';
 import PaymentIcon from '@mui/icons-material/Payment';
 import { Link } from 'react-router-dom';
+
 export default function CartDrawer({
   setOpenDrawer,
   openDrawer,

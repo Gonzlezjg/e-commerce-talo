@@ -1,27 +1,64 @@
-import { Box, Typography } from '@mui/material';
+/* eslint-disable react/prop-types */
+import { Box, CircularProgress, TextField, Typography } from '@mui/material';
 import GridCardsProducts from '../../components/GridCardsProducts';
 import { useGetProductsQuery } from '../../services/products/products';
 import CartDrawer from '../../components/CartDrawer';
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addProduct } from '../../services/features/cartSlice';
+import ErrorIcon from '@mui/icons-material/Error';
+import { useState } from 'react';
 
 const Store = ({ openDrawer, setOpenDrawer }) => {
   const dispatch = useDispatch();
   const { data: products, error, isLoading } = useGetProductsQuery();
-
+  const [searchText, setSearchText] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState(products?.hits);
   const cartProducts = useSelector((state) => state.cart.products);
   const handleAddToCart = (product) => {
     dispatch(addProduct(product));
   };
 
   if (isLoading) {
-    return <>Loading..</>;
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <CircularProgress color="primary" />
+      </Box>
+    );
   }
 
   if (error) {
-    return <>Error..</>;
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <ErrorIcon fontSize="large" color="primary" />
+        <Typography fontFamily="Roboto" variant="h2">
+          Ha ocurrido un error :(
+        </Typography>
+      </Box>
+    );
   }
+
+  const handleSearchChange = (event) => {
+    const { value } = event.target;
+    setSearchText(value);
+    const filtered = products?.hits.filter((product) =>
+      product.name.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  };
 
   return (
     <>
@@ -31,12 +68,30 @@ const Store = ({ openDrawer, setOpenDrawer }) => {
           padding: 10,
         }}
       >
-        <Typography variant="h6" color={'#131921'} mb={4}>
-          En Talo Shop puedes encontrar todos los materiales de construcción
-        </Typography>
+        <Box
+          component="section"
+          sx={{
+            display: 'flex',
+            flex: '0 1 1',
+            width: '100%',
+            alignItems: 'center',
+            mb: 2,
+          }}
+        >
+          <Box>
+            <TextField
+              id="search-products"
+              label="Buscador de productos"
+              variant="outlined"
+              onChange={handleSearchChange}
+              value={searchText}
+            />
+          </Box>
+        </Box>
+
         <Box component={'section'}>
           <GridCardsProducts
-            products={products.hits}
+            products={filteredProducts}
             handleAddToCart={handleAddToCart}
           />
         </Box>

@@ -7,13 +7,22 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ROLES } from 'src/constants/roles';
-import { ADMIN_KEY, ROLES_KEY } from 'src/constants/keys';
+import { ADMIN_KEY, PUBLIC_KEY, ROLES_KEY } from 'src/constants/keys';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext) {
+    const isPublic = this.reflector.get<boolean>(
+      PUBLIC_KEY,
+      context.getHandler(),
+    );
+
+    if (isPublic) {
+      return true;
+    }
+
     const getRoles = this.reflector.get<Array<keyof typeof ROLES>>(
       ROLES_KEY,
       context.getHandler(),

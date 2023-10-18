@@ -10,19 +10,20 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
-import { UserDTO, UserUpdateDTO } from '../dto/user.dto';
+import { CreateUserDTO, UserUpdateDTO } from '../dto/user.dto';
 import { AuthenticationGuard } from 'src/authentication/guards/authentication.guard';
 import { RolesGuard } from 'src/authentication/guards/roles.guard';
 import { Roles } from 'src/authentication/decorators/roles.decorator';
+import { PublicAccess } from 'src/authentication/decorators/public.decorator';
 
 @Controller('users')
 @UseGuards(AuthenticationGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Roles('ADMIN')
+  @PublicAccess()
   @Post('create')
-  async create(@Body() userDto: UserDTO) {
+  async create(@Body() userDto: CreateUserDTO) {
     return await this.usersService.create(userDto);
   }
 

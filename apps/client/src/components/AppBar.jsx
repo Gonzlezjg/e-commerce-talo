@@ -6,14 +6,15 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import { IconButton, Menu, MenuItem } from '@mui/material';
+import { Badge, IconButton, Menu, MenuItem } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../services/features/authSlice';
 
 const NavAppBar = ({ setOpenDrawer, userData }) => {
+  const cartProducts = useSelector((state) => state.cart.products);
   const [anchorEl, setAnchorEl] = useState(null);
   const dispatch = useDispatch();
   const history = useNavigate();
@@ -56,13 +57,50 @@ const NavAppBar = ({ setOpenDrawer, userData }) => {
               <ShoppingBasketIcon
                 fontSize="large"
                 color="primary"
+                sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}
+              />
+              <Typography
+                variant="h5"
+                noWrap
+                component="a"
+                sx={{
+                  mr: 2,
+                  display: { xs: 'flex', md: 'none' },
+                  fontWeight: 700,
+                  color: 'black',
+                  textDecoration: 'none',
+                }}
+              >
+                Talo Shop
+              </Typography>
+            </Box>
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }} />
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <ShoppingBasketIcon
+                fontSize="large"
+                color="primary"
                 sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}
               />
               <Typography
                 variant="h6"
                 noWrap
                 component="a"
-                href="#app-bar-with-responsive-menu"
+                href="/"
                 fontFamily={'Roboto'}
                 sx={{
                   mr: 2,
@@ -74,6 +112,8 @@ const NavAppBar = ({ setOpenDrawer, userData }) => {
               >
                 Talo shop
               </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
               {userData.isAuthenticated && (
                 <div>
                   <IconButton
@@ -108,37 +148,13 @@ const NavAppBar = ({ setOpenDrawer, userData }) => {
                   </Menu>
                 </div>
               )}
+              <IconButton size='large' onClick={() => setOpenDrawer(true)} color="primary">
+                <Badge badgeContent={cartProducts.length} color="primary">
+                  <ShoppingCartOutlinedIcon />
+                </Badge>
+              </IconButton>
             </Box>
-
-            <IconButton onClick={() => setOpenDrawer(true)} color="primary">
-              <ShoppingCartOutlinedIcon />
-            </IconButton>
           </Box>
-
-          <ShoppingBasketIcon
-            fontSize="large"
-            color="primary"
-            sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}
-          />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            Talo Shop
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }} />
         </Toolbar>
       </Container>
     </AppBar>

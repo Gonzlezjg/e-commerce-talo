@@ -26,7 +26,8 @@
     "react-router": "^6.17.0",
     "react-router-dom": "^6.17.0",
     "redux-persist": "^6.0.0",
-    "react-hook-form": "^7.47.0"
+    "react-hook-form": "^7.47.0",
+    "firebase": "10.5.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
